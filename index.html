@@ -1,145 +1,485 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Giveaway Fayz</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎁 Fayz Giveaway</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-[data-theme="dark"]{--bg:#0f0f0f;--card:#1a1a1a;--border:#2e2e2e;--text:#f0f0f0;--muted:#777;--input-bg:#111;--input-border:#333;--shadow:rgba(0,0,0,0.4)}
-[data-theme="light"]{--bg:#f4f4f4;--card:#fff;--border:#e0e0e0;--text:#111;--muted:#888;--input-bg:#f9f9f9;--input-border:#ccc;--shadow:rgba(0,0,0,0.08)}
-body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;transition:background .3s,color .3s}
-.theme-toggle{position:fixed;top:1.2rem;right:1.2rem;background:none;border:1px solid var(--border);border-radius:99px;padding:6px 12px;font-size:16px;cursor:pointer;color:var(--text);transition:background .2s;z-index:10}
-.theme-toggle:hover{background:var(--border)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 2rem 1.75rem;width:100%;max-width:420px;box-shadow:0 8px 32px var(--shadow)}
-.card h1{font-size:1.35rem;font-weight:700;text-align:center;margin-bottom:.3rem}
-.card .sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:1.75rem}
-label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
-.required{color:#ff5c5c;margin-left:2px}
-input[type="text"]{width:100%;background:var(--input-bg);border:1px solid var(--input-border);border-radius:10px;padding:.8rem 1rem;font-size:15px;font-family:'Poppins',sans-serif;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:1.25rem}
-input[type="text"]::placeholder{color:#555}
-input[type="text"]:focus{border-color:#6c63ff;box-shadow:0 0 0 3px rgba(108,99,255,.15)}
-.bonus-box{background:rgba(255,200,0,.06);border:1.5px solid rgba(255,200,0,.2);border-radius:12px;padding:1rem 1.1rem;margin-bottom:1.25rem;cursor:pointer;transition:background .2s,border-color .2s}
-.bonus-box:hover{background:rgba(255,200,0,.1);border-color:rgba(255,200,0,.5)}
-.bonus-box.active{background:rgba(255,200,0,.13);border-color:#ffc800}
-.bonus-inner{display:flex;align-items:center;gap:.85rem}
-.bonus-check{width:22px;height:22px;min-width:22px;border-radius:6px;border:2px solid rgba(255,200,0,.35);display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
-.bonus-box.active .bonus-check{background:#ffc800;border-color:#ffc800}
-.bonus-check svg{display:none}
-.bonus-box.active .bonus-check svg{display:block}
-.bonus-title{font-size:13px;font-weight:700;color:#ffc800;margin-bottom:3px}
-.bonus-desc{font-size:11.5px;color:var(--muted);line-height:1.55}
-.x3-badge{display:inline-block;background:#ffc800;color:#000;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:6px;letter-spacing:.03em}
-.stake-banner{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(108,99,255,.08);border:1px solid rgba(108,99,255,.25);border-radius:10px;padding:.7rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--muted);text-align:center;flex-wrap:wrap}
-.stake-banner a{color:#6c63ff;font-weight:600;text-decoration:none}
-.stake-banner a:hover{text-decoration:underline}
-.note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:1.25rem;line-height:1.7}
-.err-msg{font-size:12px;color:#ff5c5c;text-align:center;margin-top:.5rem;min-height:18px}
-button[type="submit"]{width:100%;background:linear-gradient(135deg,#6c63ff,#48cfad);border:none;border-radius:10px;padding:.85rem;font-size:15px;font-weight:700;font-family:'Poppins',sans-serif;color:#fff;cursor:pointer;letter-spacing:.03em;transition:opacity .2s,transform .15s}
-button[type="submit"]:hover{opacity:.88;transform:translateY(-1px)}
-button[type="submit"]:active{transform:scale(.98)}
-button[type="submit"]:disabled{opacity:.5;cursor:not-allowed;transform:none}
-#success{display:none;text-align:center;padding:.5rem 0}
-.big-emoji{font-size:3rem;display:block;margin-bottom:.75rem;animation:pop .5s cubic-bezier(.36,.07,.19,.97) both}
-@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
-#success h2{font-size:1.25rem;font-weight:700;margin-bottom:.4rem;color:#6c63ff}
-#success p{font-size:13px;color:var(--muted);line-height:1.7}
-#success a{color:#6c63ff;font-weight:600;text-decoration:none}
-.bonus-success{display:inline-block;background:rgba(255,200,0,.15);border:1px solid rgba(255,200,0,.4);color:#ffc800;font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;margin-top:.9rem}
-footer{margin-top:2rem;font-size:11px;color:var(--muted);text-align:center}
-.conf{position:fixed;width:8px;height:8px;top:-10px;border-radius:2px;pointer-events:none;z-index:999;animation:fall linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+  :root {
+    --gold: #F5C842;
+    --gold2: #FFE080;
+    --dark: #0A0A0F;
+    --dark2: #12121A;
+    --dark3: #1C1C28;
+    --card: #16161F;
+    --border: rgba(245,200,66,0.18);
+    --green: #00E5A0;
+    --text: #E8E8F0;
+    --muted: #7070A0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(245,200,66,0.10) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,229,160,0.06) 0%, transparent 60%),
+                var(--dark);
+  }
+
+  .bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: 
+      radial-gradient(1px 1px at 20% 30%, rgba(245,200,66,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(245,200,66,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 70%, rgba(245,200,66,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, rgba(0,229,160,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 50%, rgba(245,200,66,0.25) 0%, transparent 100%);
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    from { opacity: 0.5; }
+    to { opacity: 1; }
+  }
+
+  .particles { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 16px 60px; }
+
+  header {
+    width: 100%; max-width: 680px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 0 0;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .logo-badge {
+    display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, rgba(245,200,66,0.12), rgba(245,200,66,0.04));
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+  .logo-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.4);} }
+
+  .hero {
+    text-align: center;
+    margin: 48px 0 40px;
+    animation: fadeUp 0.8s ease 0.1s both;
+  }
+
+  .prize-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(90deg, rgba(245,200,66,0.15), rgba(245,200,66,0.08));
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 100px; padding: 6px 16px;
+    font-size: 13px; font-weight: 600; color: var(--gold);
+    margin-bottom: 20px; letter-spacing: 0.5px;
+  }
+
+  .subtitle {
+    font-size: 16px; color: var(--muted);
+    font-weight: 400; max-width: 380px; margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .timer-box {
+    display: flex; gap: 12px; justify-content: center;
+    margin: 32px 0;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+  .timer-unit {
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    min-width: 72px;
+  }
+  .timer-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; line-height: 1;
+    color: var(--gold);
+  }
+  .timer-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+
+  .cards {
+    width: 100%; max-width: 680px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+  @media(max-width: 560px) { .cards { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 28px 24px;
+    transition: transform 0.2s, border-color 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .card:hover { transform: translateY(-3px); }
+
+  .card.new {
+    border-color: rgba(245,200,66,0.4);
+    background: linear-gradient(135deg, #1C1C14, #16161F);
+  }
+  .card.new::before {
+    content: '';
+    position: absolute; top: -1px; left: 16px; right: 16px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .card.new::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(245,200,66,0.08), transparent);
+    pointer-events: none;
+  }
+
+  .badge-top {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(90deg, var(--gold), #FFE080);
+    color: #1a1500;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 100px;
+    margin-bottom: 18px;
+  }
+
+  .card-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 1px;
+    margin-bottom: 8px; color: #fff;
+  }
+  .card.new .card-title { color: var(--gold); }
+
+  .card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+
+  .multiplier {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.25);
+    border-radius: 12px; padding: 10px 14px;
+    margin-bottom: 20px;
+  }
+  .multiplier-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; color: var(--gold); line-height: 1;
+  }
+  .multiplier-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+
+  .form-group { display: flex; flex-direction: column; gap: 10px; }
+
+  input[type="text"] {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  input[type="text"]::placeholder { color: var(--muted); }
+  input[type="text"]:focus {
+    border-color: rgba(245,200,66,0.5);
+    background: rgba(245,200,66,0.05);
+  }
+
+  .btn {
+    display: block; width: 100%;
+    padding: 14px;
+    border: none; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), #E5A800);
+    color: #1a1500;
+  }
+  .btn-primary:hover { filter: brightness(1.1); transform: scale(1.02); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-outline:hover { border-color: rgba(245,200,66,0.4); color: var(--gold); }
+
+  .cta-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--gold), #E5A800);
+    color: #1a1500;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700;
+    border-radius: 14px; border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 8px 32px rgba(245,200,66,0.25);
+    position: relative; z-index: 1;
+  }
+  .cta-btn:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(245,200,66,0.35); }
+  .cta-btn .arrow { font-size: 18px; transition: transform 0.2s; }
+  .cta-btn:hover .arrow { transform: translateX(4px); }
+
+  .steps { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .step { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+  .step-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.3);
+    color: var(--gold);
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stats {
+    width: 100%; max-width: 680px;
+    display: flex; gap: 12px; margin-top: 16px;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+  .stat-card {
+    flex: 1; background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 16px;
+    text-align: center;
+  }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  .success-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.85);
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+
+  .success-card {
+    background: var(--card);
+    border: 1px solid rgba(0,229,160,0.3);
+    border-radius: 28px; padding: 48px 40px;
+    text-align: center; max-width: 360px;
+    animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  }
+  .success-card::before {
+    content: '🎉';
+    display: block;
+    font-size: 36px; line-height: 80px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(0,229,160,0.1);
+    border: 1px solid rgba(0,229,160,0.3);
+    margin: 0 auto 20px;
+  }
+  .success-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px; color: var(--green);
+    margin-bottom: 12px; letter-spacing: 1px;
+  }
+  .success-card p { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
+  .success-close { cursor: pointer; }
+
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:none; } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes popIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+
+  footer { margin-top: 48px; color: var(--muted); font-size: 12px; animation: fadeUp 1s ease 0.5s both; }
 </style>
 </head>
 <body>
-<button class="theme-toggle" onclick="toggleTheme()">🌞</button>
-<div class="card">
-  <h1>🎁 Giveaway</h1>
-  <p class="sub">Enter your Stake username to join the raffle!</p>
-  <div id="form-wrap">
-    <div class="bonus-box" id="bonus-box" onclick="toggleBonus()">
-      <div class="bonus-inner">
-        <div class="bonus-check" id="bonus-check">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-            <path d="M2.5 6.5l3 3 5-5" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div>
-          <div class="bonus-title">I have a Stake account using code <u>FAYZ</u> <span class="x3-badge">✕3 chances 🎟️</span></div>
-          <div class="bonus-desc">Registered on Stake with the affiliate code <strong>FAYZ</strong>? Your name goes in the draw <strong>3 times</strong> instead of 1!</div>
-        </div>
+
+<div class="bg"></div>
+<div class="particles" id="particles"></div>
+
+<div class="page">
+  <header>
+    <div class="logo-badge">
+      <span class="dot"></span>
+      FAYZ GIVEAWAY
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="prize-pill">🏆 5 × $100 Cash Prizes for New Users</div>
+    <p class="subtitle">Join the raffle and try your luck. New sign-ups get <strong style="color:var(--gold)">3× more chances</strong> to win.</p>
+  </div>
+
+  <div class="timer-box">
+    <div class="timer-unit"><div class="timer-num" id="t-days">02</div><div class="timer-label">Days</div></div>
+    <div class="timer-unit"><div class="timer-num" id="t-hours">14</div><div class="timer-label">Hours</div></div>
+    <div class="timer-unit"><div class="timer-num" id="t-mins">33</div><div class="timer-label">Mins</div></div>
+    <div class="timer-unit"><div class="timer-num" id="t-secs">07</div><div class="timer-label">Secs</div></div>
+  </div>
+
+  <div class="cards">
+
+    <div class="card new">
+      <div class="badge-top">⚡ Recommended — Best Deal</div>
+      <span class="card-icon">🆕</span>
+      <div class="card-title">New to Stake?</div>
+      <p class="card-desc">Create an account via my link and enter to win one of the <strong style="color:var(--gold)">5 prizes of $100</strong> reserved exclusively for new users!</p>
+      <div class="multiplier">
+        <div class="multiplier-num">×3</div>
+        <div class="multiplier-text"><strong style="color:#fff">TRIPLE ENTRIES</strong><br>exclusive to new accounts</div>
+      </div>
+      <a href="https://stake.com/?c=Fayz&offer=fayz" target="_blank" class="cta-btn">
+        Create my account <span class="arrow">→</span>
+      </a>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div> Create your account via this link</div>
+        <div class="step"><div class="step-num">2</div> Come back and enter your username</div>
+        <div class="step"><div class="step-num">3</div> You play with 3× more chances 🎯</div>
       </div>
     </div>
-    <div class="stake-banner">
-      💡 No Stake account yet?
-      <a href="https://stake.com/?c=Fayz&offer=fayz" target="_blank" onclick="trackClick()">Sign up with code FAYZ & get ✕3 chances!</a>
+
+    <div class="card">
+      <span class="card-icon">🎮</span>
+      <div class="card-title">Already on Stake?</div>
+      <p class="card-desc">Enter your Stake username and join the raffle directly.</p>
+      <div class="form-group">
+        <input type="text" id="username" placeholder="Your Stake username…" />
+        <button class="btn btn-primary" onclick="enter()">Enter Giveaway →</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:14px;text-align:center;">
+        No account? <a href="https://stake.com/?c=Fayz&offer=fayz" style="color:var(--gold);text-decoration:none;">Create one here ×3 entries</a>
+      </p>
     </div>
-    <label for="pseudo">Stake username<span class="required">*</span></label>
-    <input type="text" id="pseudo" placeholder="Your Stake username..." maxlength="40" autocomplete="off"/>
-    <button type="submit" id="submit-btn" onclick="handleSubmit()">🎟️ Enter Giveaway</button>
-    <p class="err-msg" id="err-msg"></p>
-    <p class="note">* Affiliate status may be verified. One entry per person.</p>
+
   </div>
-  <div id="success">
-    <span class="big-emoji">🏆</span>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num" id="participants-count">247</div>
+      <div class="stat-label">Participants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1</div>
+      <div class="stat-label">Winner</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--green)">LIVE</div>
+      <div class="stat-label">Status</div>
+    </div>
+  </div>
+
+  <footer>© Fayz Giveaway — All rights reserved</footer>
+</div>
+
+<div class="success-overlay" id="successModal">
+  <div class="success-card">
     <h2>You're in!</h2>
-    <p>Good luck with the draw!<br>Stay tuned on stream for the result. 🍀<br><br>No Stake account yet?<br><a href="https://stake.com/?c=Fayz&offer=fayz" target="_blank">Sign up with code FAYZ & get ✕3 chances!</a></p>
-    <div class="bonus-success" id="bonus-success" style="display:none">🎟️ ✕3 chances applied — good luck!</div>
+    <p>Good luck with the draw! Stay tuned for the result. 🍀<br><br>
+      No Stake account yet?<br>
+      <a href="https://stake.com/?c=Fayz&offer=fayz" style="color:var(--gold);font-weight:600;text-decoration:none;">Create one → ×3 entries!</a>
+    </p>
+    <button class="btn btn-outline success-close" onclick="closeModal()">Close</button>
   </div>
 </div>
-<footer>© Giveaway Fayz — All rights reserved</footer>
+
 <script>
-const SUPABASE_URL = 'https://sguibphaitkcchadvttp.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_jBmz5JdapqDO_fEmLiViQA_uuedTEl7';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let bonusActive = false;
-function toggleTheme(){
-  const h=document.documentElement;
-  h.dataset.theme=h.dataset.theme==='dark'?'light':'dark';
-  document.querySelector('.theme-toggle').textContent=h.dataset.theme==='dark'?'🌞':'🌙';
-}
-function toggleBonus(){
-  bonusActive=!bonusActive;
-  document.getElementById('bonus-box').classList.toggle('active',bonusActive);
-}
-async function handleSubmit(){
-  const pseudo=document.getElementById('pseudo').value.trim();
-  const errEl=document.getElementById('err-msg');
-  const btn=document.getElementById('submit-btn');
-  errEl.textContent='';
-  if(!pseudo){errEl.textContent='Please enter your Stake username.';return;}
-  btn.disabled=true;
-  btn.textContent='Sending...';
-  const tickets = bonusActive ? 3 : 1;
-  const {error}=await sb.from('giveaway_entries').insert({pseudo, bonus: bonusActive, tickets});
-  if(error){
-    errEl.textContent='An error occurred. Please try again.';
-    console.error(error);
-    btn.disabled=false;
-    btn.textContent='🎟️ Enter Giveaway';
-    return;
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      width: ${Math.random() * 4 + 2}px;
+      height: ${Math.random() * 4 + 2}px;
+      animation-duration: ${Math.random() * 12 + 8}s;
+      animation-delay: ${Math.random() * 8}s;
+      opacity: ${Math.random() * 0.4 + 0.1};
+      background: ${Math.random() > 0.5 ? '#F5C842' : '#00E5A0'};
+    `;
+    container.appendChild(p);
   }
-  document.getElementById('form-wrap').style.display='none';
-  document.getElementById('success').style.display='block';
-  if(bonusActive) document.getElementById('bonus-success').style.display='inline-block';
-  confetti();
-}
-async function trackClick(){
-  const pseudo=document.getElementById('pseudo').value.trim()||'Unknown';
-  await sb.from('stake_clicks').insert({pseudo});
-}
-function confetti(){
-  const c=['#6c63ff','#48cfad','#FFD93D','#FF6B6B','#ffc800'];
-  for(let i=0;i<80;i++){
-    const el=document.createElement('div');
-    el.className='conf';
-    el.style.cssText=`left:${Math.random()*100}vw;background:${c[i%c.length]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.6}s;width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'}`;
-    document.body.appendChild(el);
-    el.addEventListener('animationend',()=>el.remove());
+
+  const end = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 14 * 60 * 60 * 1000 + 33 * 60 * 1000);
+  function updateTimer() {
+    const diff = Math.max(0, end - Date.now());
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('t-days').textContent = String(d).padStart(2, '0');
+    document.getElementById('t-hours').textContent = String(h).padStart(2, '0');
+    document.getElementById('t-mins').textContent = String(m).padStart(2, '0');
+    document.getElementById('t-secs').textContent = String(s).padStart(2, '0');
   }
-}
+  setInterval(updateTimer, 1000);
+  updateTimer();
+
+  let count = 247;
+  function bumpCount() {
+    const add = Math.floor(Math.random() * 3) + 1;
+    count += add;
+    document.getElementById('participants-count').textContent = count;
+    setTimeout(bumpCount, Math.random() * 14000 + 8000);
+  }
+  setTimeout(bumpCount, Math.random() * 6000 + 4000);
+
+  function enter() {
+    const username = document.getElementById('username').value.trim();
+    if (!username) {
+      document.getElementById('username').style.borderColor = 'rgba(255,80,80,0.6)';
+      setTimeout(() => document.getElementById('username').style.borderColor = '', 1500);
+      return;
+    }
+    document.getElementById('successModal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('successModal').classList.remove('show');
+    document.getElementById('username').value = '';
+  }
+
+  document.getElementById('successModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
 </script>
 </body>
 </html>
