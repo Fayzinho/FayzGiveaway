@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎁 Fayz Giveaway</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --gold: #F5C842;
-    --gold2: #FFE080;
     --dark: #0A0A0F;
-    --dark2: #12121A;
-    --dark3: #1C1C28;
     --card: #16161F;
     --border: rgba(245,200,66,0.18);
     --green: #00E5A0;
@@ -35,11 +33,10 @@
                 radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,229,160,0.06) 0%, transparent 60%),
                 var(--dark);
   }
-
   .bg::before {
     content: '';
     position: absolute; inset: 0;
-    background-image: 
+    background-image:
       radial-gradient(1px 1px at 20% 30%, rgba(245,200,66,0.4) 0%, transparent 100%),
       radial-gradient(1px 1px at 80% 10%, rgba(245,200,66,0.3) 0%, transparent 100%),
       radial-gradient(1px 1px at 60% 70%, rgba(245,200,66,0.2) 0%, transparent 100%),
@@ -47,288 +44,102 @@
       radial-gradient(1px 1px at 90% 50%, rgba(245,200,66,0.25) 0%, transparent 100%);
     animation: twinkle 4s ease-in-out infinite alternate;
   }
-
-  @keyframes twinkle {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
-  }
+  @keyframes twinkle { from{opacity:.5} to{opacity:1} }
 
   .particles { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
   .particle {
-    position: absolute;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--gold);
-    opacity: 0;
-    animation: float linear infinite;
+    position: absolute; width: 4px; height: 4px; border-radius: 50%;
+    background: var(--gold); opacity: 0; animation: floatUp linear infinite;
   }
-  @keyframes float {
-    0% { transform: translateY(100vh) scale(0); opacity: 0; }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.3; }
-    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  @keyframes floatUp {
+    0%{transform:translateY(100vh) scale(0);opacity:0}
+    10%{opacity:.6} 90%{opacity:.3}
+    100%{transform:translateY(-10vh) scale(1);opacity:0}
   }
 
-  .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 16px 60px; }
+  .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px 16px 80px; }
 
-  header {
-    width: 100%; max-width: 680px;
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px 0 0;
-    animation: fadeDown 0.7s ease both;
-  }
+  header { width:100%;max-width:680px;display:flex;align-items:center;justify-content:center;padding:24px 0 0;animation:fadeDown .7s ease both; }
+  .logo-badge { display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(245,200,66,.12),rgba(245,200,66,.04));border:1px solid var(--border);border-radius:100px;padding:8px 20px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--gold); }
+  .logo-badge .dot { width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite; }
+  .verified { background:rgba(0,229,160,.12);border:1px solid rgba(0,229,160,.3);border-radius:100px;padding:4px 10px;font-size:11px;color:var(--green);font-weight:600;display:flex;align-items:center;gap:4px;margin-left:8px; }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
 
-  .logo-badge {
-    display: flex; align-items: center; gap: 10px;
-    background: linear-gradient(135deg, rgba(245,200,66,0.12), rgba(245,200,66,0.04));
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 8px 20px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    color: var(--gold);
-  }
-  .logo-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.4);} }
+  .hero { text-align:center;margin:40px 0 24px;animation:fadeUp .8s ease .1s both; }
+  .prize-pill { display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,rgba(245,200,66,.15),rgba(245,200,66,.08));border:1px solid rgba(245,200,66,.3);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600;color:var(--gold);margin-bottom:20px;letter-spacing:.5px; }
+  .subtitle { font-size:16px;color:var(--muted);max-width:380px;margin:0 auto;line-height:1.6; }
 
-  .hero {
-    text-align: center;
-    margin: 48px 0 40px;
-    animation: fadeUp 0.8s ease 0.1s both;
-  }
+  .timer-box { display:flex;gap:12px;justify-content:center;margin:0 0 24px;animation:fadeUp .8s ease .2s both; }
+  .timer-unit { text-align:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 20px;min-width:72px; }
+  .timer-num { font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:var(--gold); }
+  .timer-label { font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px; }
 
-  .prize-pill {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: linear-gradient(90deg, rgba(245,200,66,0.15), rgba(245,200,66,0.08));
-    border: 1px solid rgba(245,200,66,0.3);
-    border-radius: 100px; padding: 6px 16px;
-    font-size: 13px; font-weight: 600; color: var(--gold);
-    margin-bottom: 20px; letter-spacing: 0.5px;
-  }
+  .cards { width:100%;max-width:680px;display:grid;grid-template-columns:1fr 1fr;gap:16px;animation:fadeUp .8s ease .3s both; }
+  @media(max-width:560px){.cards{grid-template-columns:1fr}}
 
-  .subtitle {
-    font-size: 16px; color: var(--muted);
-    font-weight: 400; max-width: 380px; margin: 0 auto;
-    line-height: 1.6;
-  }
+  .card { background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 24px;transition:transform .2s,border-color .2s;position:relative;overflow:hidden; }
+  .card:hover{transform:translateY(-3px)}
+  .card.new { border-color:rgba(245,200,66,.4);background:linear-gradient(135deg,#1C1C14,#16161F); }
+  .card.new::before { content:'';position:absolute;top:-1px;left:16px;right:16px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+  .card.new::after { content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(245,200,66,.08),transparent);pointer-events:none; }
 
-  .timer-box {
-    display: flex; gap: 12px; justify-content: center;
-    margin: 32px 0;
-    animation: fadeUp 0.8s ease 0.2s both;
-  }
-  .timer-unit {
-    text-align: center;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 20px;
-    min-width: 72px;
-  }
-  .timer-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px; line-height: 1;
-    color: var(--gold);
-  }
-  .timer-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+  .badge-top { display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,var(--gold),#FFE080);color:#1a1500;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:5px 12px;border-radius:100px;margin-bottom:18px; }
+  .card-icon { font-size:36px;margin-bottom:12px;display:block; }
+  .card-title { font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:8px;color:#fff; }
+  .card.new .card-title { color:var(--gold); }
+  .card-desc { font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px; }
 
-  .cards {
-    width: 100%; max-width: 680px;
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    animation: fadeUp 0.8s ease 0.3s both;
-  }
-  @media(max-width: 560px) { .cards { grid-template-columns: 1fr; } }
+  .multiplier { display:flex;align-items:center;gap:8px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);border-radius:12px;padding:10px 14px;margin-bottom:20px; }
+  .multiplier-num { font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1; }
+  .multiplier-text { font-size:12px;color:var(--text);line-height:1.4; }
 
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 28px 24px;
-    transition: transform 0.2s, border-color 0.2s;
-    position: relative; overflow: hidden;
-  }
-  .card:hover { transform: translateY(-3px); }
+  .form-group { display:flex;flex-direction:column;gap:10px; }
+  input[type="text"] { width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s,background .2s; }
+  input[type="text"]::placeholder{color:var(--muted)}
+  input[type="text"]:focus{border-color:rgba(245,200,66,.5);background:rgba(245,200,66,.05)}
 
-  .card.new {
-    border-color: rgba(245,200,66,0.4);
-    background: linear-gradient(135deg, #1C1C14, #16161F);
-  }
-  .card.new::before {
-    content: '';
-    position: absolute; top: -1px; left: 16px; right: 16px; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-  .card.new::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(245,200,66,0.08), transparent);
-    pointer-events: none;
-  }
+  .btn { display:block;width:100%;padding:14px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s; }
+  .btn-primary { background:linear-gradient(135deg,var(--gold),#E5A800);color:#1a1500; }
+  .btn-primary:hover{filter:brightness(1.1);transform:scale(1.02)}
+  .btn-outline { background:transparent;border:1px solid var(--border);color:var(--muted); }
+  .btn-outline:hover{border-color:rgba(245,200,66,.4);color:var(--gold)}
 
-  .badge-top {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: linear-gradient(90deg, var(--gold), #FFE080);
-    color: #1a1500;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.8px; text-transform: uppercase;
-    padding: 5px 12px; border-radius: 100px;
-    margin-bottom: 18px;
-  }
+  .cta-btn { display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),#E5A800);color:#1a1500;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;border-radius:14px;border:none;cursor:pointer;text-decoration:none;transition:all .2s;box-shadow:0 8px 32px rgba(245,200,66,.25);position:relative;z-index:1; }
+  .cta-btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 12px 40px rgba(245,200,66,.35)}
+  .cta-btn .arrow{font-size:18px;transition:transform .2s}
+  .cta-btn:hover .arrow{transform:translateX(4px)}
 
-  .card-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+  .steps { margin-top:16px;display:flex;flex-direction:column;gap:8px; }
+  .step { display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted); }
+  .step-num { width:20px;height:20px;border-radius:50%;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.3);color:var(--gold);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
 
-  .card-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px; letter-spacing: 1px;
-    margin-bottom: 8px; color: #fff;
-  }
-  .card.new .card-title { color: var(--gold); }
+  .stats { width:100%;max-width:680px;display:flex;gap:12px;margin-top:16px;animation:fadeUp .8s ease .4s both; }
+  .stat-card { flex:1;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center; }
+  .stat-num { font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold); }
+  .stat-label { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px; }
 
-  .card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+  .float-chat { position:fixed;bottom:24px;right:24px;z-index:50;animation:popIn .5s ease 3s both; }
+  .chat-bubble { background:var(--card);border:1px solid var(--border);border-radius:18px 18px 4px 18px;padding:12px 16px;max-width:220px;box-shadow:0 8px 32px rgba(0,0,0,.4);position:relative; }
+  .chat-header { display:flex;align-items:center;gap:8px;margin-bottom:6px; }
+  .chat-avatar { width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#E5A800);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#1a1500; }
+  .chat-name { font-size:12px;font-weight:600;color:var(--gold); }
+  .chat-text { font-size:13px;color:var(--text);line-height:1.5; }
+  .chat-close { position:absolute;top:8px;right:10px;cursor:pointer;color:var(--muted);font-size:14px;line-height:1; }
+  .chat-close:hover{color:var(--text)}
 
-  .multiplier {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(245,200,66,0.1);
-    border: 1px solid rgba(245,200,66,0.25);
-    border-radius: 12px; padding: 10px 14px;
-    margin-bottom: 20px;
-  }
-  .multiplier-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px; color: var(--gold); line-height: 1;
-  }
-  .multiplier-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+  .success-overlay { display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.85);align-items:center;justify-content:center;backdrop-filter:blur(8px); }
+  .success-overlay.show{display:flex;animation:fadeIn .3s ease}
+  .success-card { background:var(--card);border:1px solid rgba(0,229,160,.3);border-radius:28px;padding:48px 40px;text-align:center;max-width:360px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275) both; }
+  .success-card::before { content:'🎉';display:block;font-size:36px;line-height:80px;width:80px;height:80px;border-radius:50%;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);margin:0 auto 20px; }
+  .success-card h2 { font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--green);margin-bottom:12px;letter-spacing:1px; }
+  .success-card p { color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:28px; }
 
-  .form-group { display: flex; flex-direction: column; gap: 10px; }
+  footer { margin-top:48px;color:var(--muted);font-size:12px;animation:fadeUp 1s ease .5s both; }
 
-  input[type="text"] {
-    width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 14px 16px;
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  input[type="text"]::placeholder { color: var(--muted); }
-  input[type="text"]:focus {
-    border-color: rgba(245,200,66,0.5);
-    background: rgba(245,200,66,0.05);
-  }
-
-  .btn {
-    display: block; width: 100%;
-    padding: 14px;
-    border: none; border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px; font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--gold), #E5A800);
-    color: #1a1500;
-  }
-  .btn-primary:hover { filter: brightness(1.1); transform: scale(1.02); }
-  .btn-primary:active { transform: scale(0.98); }
-
-  .btn-outline {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-  .btn-outline:hover { border-color: rgba(245,200,66,0.4); color: var(--gold); }
-
-  .cta-btn {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; padding: 16px;
-    background: linear-gradient(135deg, var(--gold), #E5A800);
-    color: #1a1500;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px; font-weight: 700;
-    border-radius: 14px; border: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s;
-    box-shadow: 0 8px 32px rgba(245,200,66,0.25);
-    position: relative; z-index: 1;
-  }
-  .cta-btn:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(245,200,66,0.35); }
-  .cta-btn .arrow { font-size: 18px; transition: transform 0.2s; }
-  .cta-btn:hover .arrow { transform: translateX(4px); }
-
-  .steps { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
-  .step { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
-  .step-num {
-    width: 20px; height: 20px; border-radius: 50%;
-    background: rgba(245,200,66,0.1);
-    border: 1px solid rgba(245,200,66,0.3);
-    color: var(--gold);
-    font-size: 10px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .stats {
-    width: 100%; max-width: 680px;
-    display: flex; gap: 12px; margin-top: 16px;
-    animation: fadeUp 0.8s ease 0.4s both;
-  }
-  .stat-card {
-    flex: 1; background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px; padding: 16px;
-    text-align: center;
-  }
-  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); }
-  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
-
-  .success-overlay {
-    display: none;
-    position: fixed; inset: 0; z-index: 100;
-    background: rgba(0,0,0,0.85);
-    align-items: center; justify-content: center;
-    backdrop-filter: blur(8px);
-  }
-  .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
-
-  .success-card {
-    background: var(--card);
-    border: 1px solid rgba(0,229,160,0.3);
-    border-radius: 28px; padding: 48px 40px;
-    text-align: center; max-width: 360px;
-    animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;
-  }
-  .success-card::before {
-    content: '🎉';
-    display: block;
-    font-size: 36px; line-height: 80px;
-    width: 80px; height: 80px; border-radius: 50%;
-    background: rgba(0,229,160,0.1);
-    border: 1px solid rgba(0,229,160,0.3);
-    margin: 0 auto 20px;
-  }
-  .success-card h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px; color: var(--green);
-    margin-bottom: 12px; letter-spacing: 1px;
-  }
-  .success-card p { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
-  .success-close { cursor: pointer; }
-
-  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:none; } }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
-  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-  @keyframes popIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
-
-  footer { margin-top: 48px; color: var(--muted); font-size: 12px; animation: fadeUp 1s ease 0.5s both; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes popIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -337,10 +148,12 @@
 <div class="particles" id="particles"></div>
 
 <div class="page">
+
   <header>
     <div class="logo-badge">
       <span class="dot"></span>
       FAYZ GIVEAWAY
+      <span class="verified">✔ Official</span>
     </div>
   </header>
 
@@ -357,7 +170,6 @@
   </div>
 
   <div class="cards">
-
     <div class="card new">
       <div class="badge-top">⚡ Recommended — Best Deal</div>
       <span class="card-icon">🆕</span>
@@ -389,7 +201,6 @@
         No account? <a href="https://stake.com/?c=Fayz&offer=fayz" style="color:var(--gold);text-decoration:none;">Create one here ×3 entries</a>
       </p>
     </div>
-
   </div>
 
   <div class="stats">
@@ -398,8 +209,8 @@
       <div class="stat-label">Participants</div>
     </div>
     <div class="stat-card">
-      <div class="stat-num">1</div>
-      <div class="stat-label">Winner</div>
+      <div class="stat-num">5</div>
+      <div class="stat-label">Winners</div>
     </div>
     <div class="stat-card">
       <div class="stat-num" style="color:var(--green)">LIVE</div>
@@ -410,6 +221,19 @@
   <footer>© Fayz Giveaway — All rights reserved</footer>
 </div>
 
+<!-- FLOATING CHAT -->
+<div class="float-chat" id="floatChat">
+  <div class="chat-bubble">
+    <span class="chat-close" onclick="document.getElementById('floatChat').style.display='none'">✕</span>
+    <div class="chat-header">
+      <div class="chat-avatar">F</div>
+      <div class="chat-name">Fayz</div>
+    </div>
+    <div class="chat-text">🔥 Giveaway ending soon! Don't miss your chance to win $100 👀</div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
 <div class="success-overlay" id="successModal">
   <div class="success-card">
     <h2>You're in!</h2>
@@ -417,58 +241,63 @@
       No Stake account yet?<br>
       <a href="https://stake.com/?c=Fayz&offer=fayz" style="color:var(--gold);font-weight:600;text-decoration:none;">Create one → ×3 entries!</a>
     </p>
-    <button class="btn btn-outline success-close" onclick="closeModal()">Close</button>
+    <button class="btn btn-outline" onclick="closeModal()">Close</button>
   </div>
 </div>
 
 <script>
+  // Particles
   const container = document.getElementById('particles');
   for (let i = 0; i < 18; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
-    p.style.cssText = `
-      left: ${Math.random() * 100}%;
-      width: ${Math.random() * 4 + 2}px;
-      height: ${Math.random() * 4 + 2}px;
-      animation-duration: ${Math.random() * 12 + 8}s;
-      animation-delay: ${Math.random() * 8}s;
-      opacity: ${Math.random() * 0.4 + 0.1};
-      background: ${Math.random() > 0.5 ? '#F5C842' : '#00E5A0'};
-    `;
+    p.style.cssText = `left:${Math.random()*100}%;width:${Math.random()*4+2}px;height:${Math.random()*4+2}px;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*8}s;opacity:${Math.random()*.4+.1};background:${Math.random()>.5?'#F5C842':'#00E5A0'};`;
     container.appendChild(p);
   }
 
-  const end = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 14 * 60 * 60 * 1000 + 33 * 60 * 1000);
+  // Timer
+  const end = new Date(Date.now() + 2*24*60*60*1000 + 14*60*60*1000 + 33*60*1000);
   function updateTimer() {
     const diff = Math.max(0, end - Date.now());
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('t-days').textContent = String(d).padStart(2, '0');
-    document.getElementById('t-hours').textContent = String(h).padStart(2, '0');
-    document.getElementById('t-mins').textContent = String(m).padStart(2, '0');
-    document.getElementById('t-secs').textContent = String(s).padStart(2, '0');
+    const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000),
+          m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+    document.getElementById('t-days').textContent = String(d).padStart(2,'0');
+    document.getElementById('t-hours').textContent = String(h).padStart(2,'0');
+    document.getElementById('t-mins').textContent = String(m).padStart(2,'0');
+    document.getElementById('t-secs').textContent = String(s).padStart(2,'0');
   }
-  setInterval(updateTimer, 1000);
-  updateTimer();
+  setInterval(updateTimer, 1000); updateTimer();
 
+  // Participants — always up
   let count = 247;
   function bumpCount() {
-    const add = Math.floor(Math.random() * 3) + 1;
-    count += add;
+    count += Math.floor(Math.random()*3)+1;
     document.getElementById('participants-count').textContent = count;
-    setTimeout(bumpCount, Math.random() * 14000 + 8000);
+    setTimeout(bumpCount, Math.random()*14000+8000);
   }
-  setTimeout(bumpCount, Math.random() * 6000 + 4000);
+  setTimeout(bumpCount, Math.random()*6000+4000);
 
-  function enter() {
+  // Supabase
+  const SUPABASE_URL = 'https://sguibphaitkcchadvttp.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_jBmz5JdapqDO_fEmLiViQA_uuedTEl7';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Enter giveaway
+  async function enter() {
     const username = document.getElementById('username').value.trim();
     if (!username) {
-      document.getElementById('username').style.borderColor = 'rgba(255,80,80,0.6)';
+      document.getElementById('username').style.borderColor = 'rgba(255,80,80,.6)';
       setTimeout(() => document.getElementById('username').style.borderColor = '', 1500);
       return;
     }
+    const btn = document.querySelector('.btn-primary');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+    const isNew = sessionStorage.getItem('newUser') === '1';
+    await sb.from('giveaway_entries').insert({ pseudo: username, bonus: isNew, tickets: isNew ? 3 : 1 });
+    if (isNew) sessionStorage.removeItem('newUser');
+    btn.textContent = 'Enter Giveaway →';
+    btn.disabled = false;
     document.getElementById('successModal').classList.add('show');
   }
 
@@ -476,9 +305,13 @@
     document.getElementById('successModal').classList.remove('show');
     document.getElementById('username').value = '';
   }
+  document.getElementById('successModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('successModal')) closeModal();
+  });
 
-  document.getElementById('successModal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+  // Mark new user when they click the Stake link
+  document.querySelector('.cta-btn').addEventListener('click', () => {
+    sessionStorage.setItem('newUser', '1');
   });
 </script>
 </body>
